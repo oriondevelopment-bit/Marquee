@@ -59,48 +59,6 @@ export function StepInfo({ state, actions }) {
         <Field label="Email Address"  field="email"   type="email" placeholder="jane@example.com"   form={form} errors={errors} update={updateField} />
         <Field label="Property Address (Pool Site)" field="address" placeholder="123 Main St, Fairfield, CT" form={form} errors={errors} update={updateField} />
 
-        {/* Photo Upload */}
-        <div className={styles.photoSection}>
-          <p className={styles.fieldLabel}>
-            Yard Photos <span className={styles.fieldOptional}>— optional, up to 5</span>
-          </p>
-          <div
-            role="button"
-            tabIndex={0}
-            className={styles.photoDropzone}
-            onClick={() => fileRef.current?.click()}
-            onKeyDown={(e) => e.key === 'Enter' && fileRef.current?.click()}
-          >
-            <span className={styles.photoDropzoneIcon}>📷</span>
-            <strong>Click to upload site photos</strong>
-            <span>Helps tailor recommendations to your yard · JPG, PNG, HEIC</span>
-          </div>
-          <input
-            ref={fileRef}
-            type="file"
-            accept="image/*"
-            multiple
-            onChange={(e) => addPhotos(e.target.files)}
-            style={{ display: 'none' }}
-            aria-label="Upload yard photos"
-          />
-          {photos.length > 0 && (
-            <div className={styles.photoGrid}>
-              {photos.map((p, i) => (
-                <div key={i} className={styles.photoThumb}>
-                  <img src={p.url} alt={p.name} />
-                  <button
-                    onClick={() => removePhoto(i)}
-                    aria-label={`Remove ${p.name}`}
-                    className={styles.photoRemove}
-                  >
-                    ×
-                  </button>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
 
         <button className={`th-btn ${styles.submitBtn}`} onClick={goToDesign}>
           Begin Design Consultation →

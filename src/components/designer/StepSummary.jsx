@@ -4,10 +4,10 @@ import { useState, useEffect } from 'react';
 
 const ORION_KEY = import.meta.env.VITE_ORION_KEY || 'orion_wk_636fd87d-d04a-4843-afff-0727ae240a65';
 
-async function generateRender(messages, poolType, photos) {
+async function generateRender(messages, poolType) {
   try {
     // Pass the first site photo as base64 reference if available
-    const sitePhotoBase64 = photos?.length > 0 ? photos[0].url : null;
+    const sitePhotoBase64 = null;
     const res = await fetch('https://orion.cool/api/widget/render', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'x-orion-key': ORION_KEY },
@@ -25,17 +25,16 @@ export function StepSummary({ state, actions }) {
   const [renderUrl, setRenderUrl]     = useState(null);
   const [rendering, setRendering]     = useState(false);
   const [renderError, setRenderError] = useState(false);
-  const [spaceDesc, setSpaceDesc] = useState('');
 
   useEffect(() => {
     if (submitted) return;
     setRendering(true);
     setRenderError(false);
-    generateRender(messages, poolType, photos)
+    generateRender(messages, poolType)
       .then(result => {
         if (result?.imageDataUrl) {
           setRenderUrl(result.imageDataUrl);
-          if (result.spaceDescription) setSpaceDesc(result.spaceDescription);
+
         } else setRenderError(true);
       })
       .catch(() => setRenderError(true))
@@ -97,24 +96,6 @@ export function StepSummary({ state, actions }) {
               style={{ width: '100%', display: 'block', borderRadius: 'var(--radius-md)' }}
             />
           )}
-          {!rendering && spaceDesc && renderUrl && (
-            <div style={{
-              position: 'absolute', bottom: 48, left: 10, right: 10,
-              background: 'rgba(1,15,52,0.72)', backdropFilter: 'blur(4px)',
-              borderRadius: 10, padding: '8px 12px',
-              display: 'flex', gap: 8, alignItems: 'flex-start',
-            }}>
-              <span style={{ fontSize: 14, flexShrink: 0 }}>🔍</span>
-              <div>
-                <p style={{ margin: 0, fontSize: 10, fontWeight: 800, color: 'var(--theme-color3)', fontFamily: 'var(--title-font)', letterSpacing: 0.5, textTransform: 'uppercase', marginBottom: 2 }}>
-                  Orion analyzed your yard
-                </p>
-                <p style={{ margin: 0, fontSize: 11, color: 'rgba(255,255,255,0.8)', lineHeight: 1.5, fontStyle: 'italic' }}>
-                  "{spaceDesc}"
-                </p>
-              </div>
-            </div>
-          )}
           {!rendering && renderError && (
             <div style={{ textAlign: 'center', padding: 32 }}>
               <div style={{ fontSize: 28, marginBottom: 8 }}>🏊</div>
@@ -153,19 +134,6 @@ export function StepSummary({ state, actions }) {
           </div>
         ))}
       </div>
-
-      {/* Photos */}
-      {photos.length > 0 && (
-        <div className={styles.summarySection}>
-          <p className={styles.summarySectionTitle}>Site Photos ({photos.length})</p>
-          <div className={styles.summaryPhotoRow}>
-            {photos.map((p, i) => (
-              <img key={i} src={p.url} alt="" className={styles.summaryPhoto} />
-            ))}
-          </div>
-        </div>
-      )}
-
       {/* Transcript */}
       <div className={styles.summarySection}>
         <p className={styles.summarySectionTitle}>
