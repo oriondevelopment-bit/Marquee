@@ -15,7 +15,7 @@ async function generateRender(messages, poolType, photos) {
     });
     if (!res.ok) return null;
     const data = await res.json();
-    return data.imageDataUrl || null;
+    return data.imageDataUrl ? data : null;
   } catch { return null; }
 }
 
@@ -25,15 +25,18 @@ export function StepSummary({ state, actions }) {
   const [renderUrl, setRenderUrl]     = useState(null);
   const [rendering, setRendering]     = useState(false);
   const [renderError, setRenderError] = useState(false);
+  const [spaceDesc, setSpaceDesc] = useState('');
 
   useEffect(() => {
     if (submitted) return;
     setRendering(true);
     setRenderError(false);
     generateRender(messages, poolType, photos)
-      .then(url => {
-        if (url) setRenderUrl(url);
-        else setRenderError(true);
+      .then(result => {
+        if (result?.imageDataUrl) {
+          setRenderUrl(result.imageDataUrl);
+          if (result.spaceDescription) setSpaceDesc(result.spaceDescription);
+        } else setRenderError(true);
       })
       .catch(() => setRenderError(true))
       .finally(() => setRendering(false));
@@ -93,6 +96,24 @@ export function StepSummary({ state, actions }) {
               alt="AI pool rendering"
               style={{ width: '100%', display: 'block', borderRadius: 'var(--radius-md)' }}
             />
+          )}
+          {!rendering && spaceDesc && renderUrl && (
+            <div style={{
+              position: 'absolute', bottom: 48, left: 10, right: 10,
+              background: 'rgba(1,15,52,0.72)', backdropFilter: 'blur(4px)',
+              borderRadius: 10, padding: '8px 12px',
+              display: 'flex', gap: 8, alignItems: 'flex-start',
+            }}>
+              <span style={{ fontSize: 14, flexShrink: 0 }}>🔍</span>
+              <div>
+                <p style={{ margin: 0, fontSize: 10, fontWeight: 800, color: 'var(--theme-color3)', fontFamily: 'var(--title-font)', letterSpacing: 0.5, textTransform: 'uppercase', marginBottom: 2 }}>
+                  Orion analyzed your yard
+                </p>
+                <p style={{ margin: 0, fontSize: 11, color: 'rgba(255,255,255,0.8)', lineHeight: 1.5, fontStyle: 'italic' }}>
+                  "{spaceDesc}"
+                </p>
+              </div>
+            </div>
           )}
           {!rendering && renderError && (
             <div style={{ textAlign: 'center', padding: 32 }}>
