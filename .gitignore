@@ -1,0 +1,7 @@
+node_modules/
+dist/
+wordpress-plugin/assets/
+.env.local
+.env.*.local
+*.log
+.DS_Store
