@@ -4,12 +4,14 @@ import { useState, useEffect } from 'react';
 
 const ORION_KEY = import.meta.env.VITE_ORION_KEY || 'orion_wk_636fd87d-d04a-4843-afff-0727ae240a65';
 
-async function generateRender(messages, poolType) {
+async function generateRender(messages, poolType, photos) {
   try {
+    // Pass the first site photo as base64 reference if available
+    const sitePhotoBase64 = photos?.length > 0 ? photos[0].url : null;
     const res = await fetch('https://orion.cool/api/widget/render', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'x-orion-key': ORION_KEY },
-      body: JSON.stringify({ messages, poolType }),
+      body: JSON.stringify({ messages, poolType, sitePhotoBase64 }),
     });
     if (!res.ok) return null;
     const data = await res.json();
@@ -28,7 +30,7 @@ export function StepSummary({ state, actions }) {
     if (submitted) return;
     setRendering(true);
     setRenderError(false);
-    generateRender(messages, poolType)
+    generateRender(messages, poolType, photos)
       .then(url => {
         if (url) setRenderUrl(url);
         else setRenderError(true);
@@ -102,7 +104,7 @@ export function StepSummary({ state, actions }) {
           )}
           {/* Orion badge */}
           {!rendering && renderUrl && (
-            
+            <a
               href="https://orion.cool"
               target="_blank"
               rel="noreferrer"
