@@ -5,3 +5,4 @@ wordpress-plugin/assets/
 .env.*.local
 *.log
 .DS_Store
+.vercel
