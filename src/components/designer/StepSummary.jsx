@@ -4,6 +4,19 @@ import { useState, useEffect } from 'react';
 
 const ORION_KEY = import.meta.env.VITE_ORION_KEY || 'orion_wk_636fd87d-d04a-4843-afff-0727ae240a65';
 
+async function generateVideo(imageDataUrl) {
+  try {
+    const res = await fetch('https://orion.cool/api/widget/render-video', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-orion-key': ORION_KEY },
+      body: JSON.stringify({ imageBase64: imageDataUrl, industry: 'pools' }),
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    return data.videoUrl ?? null;
+  } catch { return null; }
+}
+
 async function generateRender(messages, poolType) {
   try {
     // Pass the first site photo as base64 reference if available
@@ -25,6 +38,8 @@ export function StepSummary({ state, actions }) {
   const [renderUrl, setRenderUrl]     = useState(null);
   const [rendering, setRendering]     = useState(false);
   const [renderError, setRenderError] = useState(false);
+  const [videoUrl, setVideoUrl]         = useState(null);
+  const [generatingVideo, setGeneratingVideo] = useState(false);
 
   useEffect(() => {
     if (submitted) return;
@@ -103,6 +118,37 @@ export function StepSummary({ state, actions }) {
                 Rendering unavailable — your design is saved below
               </p>
             </div>
+          )}
+          {!rendering && renderUrl && !videoUrl && (
+            <div style={{ textAlign: 'center', marginTop: 12 }}>
+              <button
+                onClick={async () => {
+                  setGeneratingVideo(true);
+                  const url = await generateVideo(renderUrl);
+                  setVideoUrl(url);
+                  setGeneratingVideo(false);
+                }}
+                disabled={generatingVideo}
+                style={{
+                  background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+                  color: '#fff', border: 'none', borderRadius: 10,
+                  padding: '10px 20px', cursor: 'pointer', fontSize: 13,
+                  fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: 8,
+                  opacity: generatingVideo ? 0.7 : 1,
+                }}
+              >
+                {generatingVideo ? '⏳ Generating cinematic video...' : '🎬 Generate Cinematic Video'}
+              </button>
+              {generatingVideo && (
+                <p style={{ fontSize: 11, color: 'var(--body-color)', marginTop: 6 }}>
+                  Takes ~30 seconds — day to night pool animation
+                </p>
+              )}
+            </div>
+          )}
+          {videoUrl && (
+            <video src={videoUrl} controls autoPlay loop
+              style={{ width: '100%', borderRadius: 'var(--radius-md)', marginTop: 12 }} />
           )}
           {/* Orion badge */}
           {!rendering && renderUrl && (
