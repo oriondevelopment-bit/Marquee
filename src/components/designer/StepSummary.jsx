@@ -120,7 +120,7 @@ export function StepSummary({ state, actions }) {
             </div>
           )}
           {!rendering && renderUrl && !videoUrl && (
-            <div style={{ textAlign: 'center', marginTop: 12 }}>
+            <div style={{ marginTop: 16, padding: '0 4px' }}>
               <button
                 onClick={async () => {
                   setGeneratingVideo(true);
@@ -130,18 +130,27 @@ export function StepSummary({ state, actions }) {
                 }}
                 disabled={generatingVideo}
                 style={{
-                  background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
-                  color: '#fff', border: 'none', borderRadius: 10,
-                  padding: '10px 20px', cursor: 'pointer', fontSize: 13,
-                  fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: 8,
-                  opacity: generatingVideo ? 0.7 : 1,
+                  width: '100%',
+                  background: generatingVideo ? 'rgba(99,102,241,0.6)' : 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%)',
+                  color: '#fff', border: 'none', borderRadius: 14,
+                  padding: '16px 24px', cursor: generatingVideo ? 'default' : 'pointer',
+                  fontSize: 15, fontWeight: 700,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
+                  boxShadow: generatingVideo ? 'none' : '0 4px 24px rgba(139,92,246,0.4)',
+                  transition: 'all 0.2s ease',
+                  letterSpacing: '-0.01em',
                 }}
               >
-                {generatingVideo ? '⏳ Generating cinematic video...' : '🎬 Generate Cinematic Video'}
+                <span style={{ fontSize: 20 }}>{generatingVideo ? '⏳' : '🎬'}</span>
+                <span>{generatingVideo ? 'Creating your cinematic video...' : 'See Your Pool Come to Life'}</span>
               </button>
-              {generatingVideo && (
-                <p style={{ fontSize: 11, color: 'var(--body-color)', marginTop: 6 }}>
-                  Takes ~30 seconds — day to night pool animation
+              {generatingVideo ? (
+                <p style={{ fontSize: 12, color: '#8b9db5', textAlign: 'center', marginTop: 8 }}>
+                  Animating your design — day to night lighting, water movement, fire feature (~30 sec)
+                </p>
+              ) : (
+                <p style={{ fontSize: 12, color: '#8b9db5', textAlign: 'center', marginTop: 8 }}>
+                  ✨ Watch your pool transform from day to night with AI-generated animation
                 </p>
               )}
             </div>
